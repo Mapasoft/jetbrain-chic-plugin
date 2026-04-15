@@ -1,0 +1,52 @@
+<idea-plugin>
+    <id>com.chic.clion-plugin</id>
+    <name>Chic Language</name>
+    <vendor>Chic Compiler Team</vendor>
+    <description><![CDATA[
+        Language support for the <b>Chic</b> programming language.<br/>
+        <ul>
+            <li>Syntax highlighting (keywords, types, literals, strings, comments, operators)</li>
+            <li>Brace and bracket matching</li>
+            <li>Code folding for blocks and block comments</li>
+            <li>Build runner — invokes the <code>chic</code> binary and maps error output to source locations</li>
+        </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <!-- ── File type ─────────────────────────────────────────────── -->
+        <fileType
+            name="Chic"
+            implementationClass="com.chic.ChicFileType"
+            fieldName="INSTANCE"
+            language="Chic"
+            extensions="chic"/>
+
+        <!-- ── Syntax highlighting ────────────────────────────────────── -->
+        <lang.syntaxHighlighterFactory
+            language="Chic"
+            implementationClass="com.chic.highlighting.ChicSyntaxHighlighterFactory"/>
+
+        <!-- ── Parser (required for PSI tree / colour attributes) ──────── -->
+        <lang.parserDefinition
+            language="Chic"
+            implementationClass="com.chic.parser.ChicParserDefinition"/>
+
+        <!-- ── Brace matching ─────────────────────────────────────────── -->
+        <lang.braceMatcher
+            language="Chic"
+            implementationClass="com.chic.editor.ChicBraceMatcher"/>
+
+        <!-- ── Code folding ───────────────────────────────────────────── -->
+        <lang.foldingBuilder
+            language="Chic"
+            implementationClass="com.chic.editor.ChicFoldingBuilder"/>
+
+        <!-- ── Run configuration ─────────────────────────────────────── -->
+        <configurationType
+            implementation="com.chic.run.ChicRunConfigurationType"/>
+
+    </extensions>
+</idea-plugin>
