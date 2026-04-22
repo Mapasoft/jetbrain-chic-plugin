@@ -48,5 +48,12 @@
         <configurationType
             implementation="com.chic.run.ChicRunConfigurationType"/>
 
+        <!-- ── Settings page ─────────────────────────────────────────── -->
+        <projectConfigurable
+            parentId="tools"
+            instance="com.chic.settings.ChicSettingsConfigurable"
+            id="com.chic.settings"
+            displayName="Chic"/>
+
     </extensions>
 </idea-plugin>

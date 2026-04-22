@@ -114,7 +114,7 @@ WHITE      = [ \t\r\n]+
     "i8" | "i16" | "i32" | "i64"   { return BUILTIN_TYPE; }
     "u8" | "u16" | "u32" | "u64"   { return BUILTIN_TYPE; }
     "f32" | "f64"                   { return BUILTIN_TYPE; }
-    "bool" | "void" | "char"        { return BUILTIN_TYPE; }
+    "bool" | "void" | "char" | "string"  { return BUILTIN_TYPE; }
 
     // ── @ as standalone token vs. @-prefixed decorator identifier ──────────
     // Must appear before the general identifier rule.

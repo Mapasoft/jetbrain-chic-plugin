@@ -1,5 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <rect width="16" height="16" rx="2" fill="#2B2B2B"/>
-  <text x="2" y="13" font-size="11" font-weight="bold" font-family="monospace" fill="#CC7832">C</text>
-  <text x="8" y="13" font-size="8" font-family="monospace" fill="#6A8759">h</text>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(0.800391,3.26278e-18,0,0.940433,39.0612,2.13163e-14)">
+        <rect x="-48.803" y="0" width="639.687" height="544.43"/>
+    </g>
+    <g transform="matrix(2.30735,0,0,2.20968,-353.514,-286.002)">
+        <g transform="matrix(2.78065,0,0,2.78065,-391.818,-670.66)">
+            <g>
+                <g transform="matrix(81.8163,0,0,81.8163,261.672,361.471)">
+                </g>
+                <text x="205.628px" y="361.471px" style="font-family:'AppleGothic';font-size:81.816px;fill:rgb(242,242,242);">C</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,37.4388,128.1)">
+            <g transform="matrix(0.395755,0,0,0.395755,235.599,28.329)">
+                <circle cx="221.313" cy="461.564" r="25.268"/>
+            </g>
+            <g transform="matrix(0.395755,0,0,0.395755,235.599,23.7264)">
+                <circle cx="221.313" cy="461.564" r="25.268" style="fill:rgb(255,0,0);"/>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,-153.188,128.1)">
+            <g transform="matrix(0.395755,0,0,0.395755,235.599,28.329)">
+                <circle cx="221.313" cy="461.564" r="25.268"/>
+            </g>
+            <g transform="matrix(0.395755,0,0,0.395755,235.599,23.7264)">
+                <circle cx="221.313" cy="461.564" r="25.268" style="fill:rgb(255,0,0);"/>
+            </g>
+        </g>
+    </g>
 </svg>

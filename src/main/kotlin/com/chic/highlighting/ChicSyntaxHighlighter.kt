@@ -146,8 +146,9 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
             tokenType == ChicTokenTypes.COMMA                   -> COMMA_KEYS
             tokenType == ChicTokenTypes.DOT                     -> DOT_KEYS
 
-            // Identifiers
-            tokenType == ChicTokenTypes.IDENTIFIER              -> IDENTIFIER_KEYS
+            // Identifiers intentionally fall through to emptyArray() so they
+            // inherit the editor's default text color — matching C/C++ behavior
+            // where only semantically-resolved symbols get colored.
 
             // Operators (everything else that is not whitespace or unknown)
             tokenType == ChicTokenTypes.PLUS      || tokenType == ChicTokenTypes.PLUS_PLUS   ||
