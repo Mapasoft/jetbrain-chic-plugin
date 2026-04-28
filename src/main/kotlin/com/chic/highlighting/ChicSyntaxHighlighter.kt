@@ -23,12 +23,22 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
 
         @JvmField
         val BUILTIN_TYPE = createTextAttributesKey(
-            "CHIC_BUILTIN_TYPE", DefaultLanguageHighlighterColors.KEYWORD
+            "CHIC_BUILTIN_TYPE", DefaultLanguageHighlighterColors.CLASS_NAME
         )
 
         @JvmField
         val BOOLEAN_LITERAL = createTextAttributesKey(
-            "CHIC_BOOLEAN_LITERAL", DefaultLanguageHighlighterColors.KEYWORD
+            "CHIC_BOOLEAN_LITERAL", DefaultLanguageHighlighterColors.PREDEFINED_SYMBOL
+        )
+
+        @JvmField
+        val PREDEFINED = createTextAttributesKey(
+            "CHIC_PREDEFINED", DefaultLanguageHighlighterColors.PREDEFINED_SYMBOL
+        )
+
+        @JvmField
+        val PREPROCESSOR = createTextAttributesKey(
+            "CHIC_PREPROCESSOR", DefaultLanguageHighlighterColors.METADATA
         )
 
         @JvmField
@@ -59,6 +69,11 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
         @JvmField
         val OPERATOR = createTextAttributesKey(
             "CHIC_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN
+        )
+
+        @JvmField
+        val FAT_ARROW = createTextAttributesKey(
+            "CHIC_FAT_ARROW", DefaultLanguageHighlighterColors.KEYWORD
         )
 
         @JvmField
@@ -94,12 +109,15 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
         private val KEYWORD_KEYS      = arrayOf(KEYWORD)
         private val BUILTIN_KEYS      = arrayOf(BUILTIN_TYPE)
         private val BOOLEAN_KEYS      = arrayOf(BOOLEAN_LITERAL)
+        private val PREDEFINED_KEYS   = arrayOf(PREDEFINED)
+        private val PREPROCESSOR_KEYS = arrayOf(PREPROCESSOR)
         private val NUMBER_KEYS       = arrayOf(NUMBER)
         private val STRING_KEYS       = arrayOf(STRING)
         private val LINE_CMT_KEYS     = arrayOf(LINE_COMMENT)
         private val BLOCK_CMT_KEYS    = arrayOf(BLOCK_COMMENT)
         private val IDENTIFIER_KEYS   = arrayOf(IDENTIFIER)
         private val OPERATOR_KEYS     = arrayOf(OPERATOR)
+        private val FAT_ARROW_KEYS    = arrayOf(FAT_ARROW)
         private val BRACES_KEYS       = arrayOf(BRACES)
         private val PARENS_KEYS       = arrayOf(PARENTHESES)
         private val BRACKETS_KEYS     = arrayOf(BRACKETS)
@@ -112,8 +130,10 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> =
         when {
-            // Booleans before keywords (both are styled like keywords but distinguished)
+            // Predefined / preprocessor / booleans before generic keywords
             tokenType in ChicTokenTypes.BOOLEANS                -> BOOLEAN_KEYS
+            tokenType in ChicTokenTypes.PREDEFINED              -> PREDEFINED_KEYS
+            tokenType in ChicTokenTypes.PREPROCESSOR            -> PREPROCESSOR_KEYS
             tokenType in ChicTokenTypes.KEYWORDS                -> KEYWORD_KEYS
             tokenType == ChicTokenTypes.BUILTIN_TYPE            -> BUILTIN_KEYS
 
@@ -147,8 +167,12 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
             tokenType == ChicTokenTypes.DOT                     -> DOT_KEYS
 
             // Identifiers intentionally fall through to emptyArray() so they
-            // inherit the editor's default text color — matching C/C++ behavior
-            // where only semantically-resolved symbols get colored.
+            // inherit the editor's default text color. The semantic annotator
+            // (ChicSemanticAnnotator) recolors specific patterns afterwards.
+
+            // Match-arm arrow gets its own attribute so it can be themed
+            // independently of generic operators.
+            tokenType == ChicTokenTypes.FAT_ARROW               -> FAT_ARROW_KEYS
 
             // Operators (everything else that is not whitespace or unknown)
             tokenType == ChicTokenTypes.PLUS      || tokenType == ChicTokenTypes.PLUS_PLUS   ||
@@ -167,7 +191,7 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
             tokenType == ChicTokenTypes.GT        || tokenType == ChicTokenTypes.GT_EQ       ||
             tokenType == ChicTokenTypes.LSHIFT    || tokenType == ChicTokenTypes.LSHIFT_EQ   ||
             tokenType == ChicTokenTypes.RSHIFT    || tokenType == ChicTokenTypes.RSHIFT_EQ   ||
-            tokenType == ChicTokenTypes.ARROW     || tokenType == ChicTokenTypes.FAT_ARROW   ||
+            tokenType == ChicTokenTypes.ARROW     ||
             tokenType == ChicTokenTypes.COLON     || tokenType == ChicTokenTypes.DOUBLE_COLON ||
             tokenType == ChicTokenTypes.DOUBLE_DOT || tokenType == ChicTokenTypes.ELLIPSIS   ||
             tokenType == ChicTokenTypes.AT        || tokenType == ChicTokenTypes.SEMICOLON   -> OPERATOR_KEYS

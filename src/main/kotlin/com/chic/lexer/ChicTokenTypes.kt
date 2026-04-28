@@ -147,14 +147,22 @@ object ChicTokenTypes {
     /** All control-flow and declaration keywords. */
     @JvmField val KEYWORDS: TokenSet = TokenSet.create(
         KW_IMPORT, KW_NAMESPACE, KW_LET, KW_VAR, KW_FUNC, KW_FOR, KW_IN, KW_STEP,
-        KW_CONTINUE, KW_BREAK, KW_IF, KW_ELSE, KW_RETURN, KW_NULL, KW_NEW,
+        KW_CONTINUE, KW_BREAK, KW_IF, KW_ELSE, KW_RETURN, KW_NEW,
         KW_RELEASE, KW_SIZEOF, KW_ENUM, KW_STRUCT, KW_UNION, KW_RAW_UNION,
         KW_ALIAS, KW_EXTENSION, KW_MATCH, KW_CAST, KW_DEFER, KW_INLINE,
-        KW_TRY, KW_OR_ELSE, KW_OR_ERROR, KW_CT_IF, KW_CT_ELSE, KW_CT_ELIF, KW_CT_END
+        KW_TRY, KW_OR_ELSE, KW_OR_ERROR
     )
 
     /** Boolean literals — highlighted separately from other keywords. */
     @JvmField val BOOLEANS: TokenSet = TokenSet.create(KW_TRUE, KW_FALSE)
+
+    /** Predefined symbols (null-like literals) — highlighted like booleans. */
+    @JvmField val PREDEFINED: TokenSet = TokenSet.create(KW_NULL)
+
+    /** Compile-time / preprocessor directives (#if, #elif, #else, #end). */
+    @JvmField val PREPROCESSOR: TokenSet = TokenSet.create(
+        KW_CT_IF, KW_CT_ELIF, KW_CT_ELSE, KW_CT_END
+    )
 
     /** All numeric and string literal token types. */
     @JvmField val LITERALS: TokenSet = TokenSet.create(

@@ -29,6 +29,11 @@
             language="Chic"
             implementationClass="com.chic.highlighting.ChicSyntaxHighlighterFactory"/>
 
+        <!-- ── Semantic highlighting (Rust-flavored: types, variants, constants, decorators) ── -->
+        <annotator
+            language="Chic"
+            implementationClass="com.chic.highlighting.ChicSemanticAnnotator"/>
+
         <!-- ── Parser (required for PSI tree / colour attributes) ──────── -->
         <lang.parserDefinition
             language="Chic"

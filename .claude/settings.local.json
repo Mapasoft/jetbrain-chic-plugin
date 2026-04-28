@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew buildPlugin)",
+      "Bash(curl -s \"https://www.jetbrains.com/clion/whatsnew/\")",
+      "Bash(curl -s \"https://blog.jetbrains.com/clion/category/releases/\")",
+      "WebSearch",
+      "WebFetch(domain:blog.jetbrains.com)",
+      "WebFetch(domain:www.jetbrains.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(unzip -p build/distributions/chic-clion-plugin-1.0.0.zip chic-clion-plugin/lib/instrumented-chic-clion-plugin-1.0.0.jar)",
+      "Bash(unzip -p /dev/stdin META-INF/plugin.xml)",
+      "Bash(unzip -l build/distributions/chic-clion-plugin-1.0.0.zip)",
+      "Bash(unzip -p /Users/martinparadis/CLionProjects/jetbrain-chic-plugin/build/distributions/chic-clion-plugin-1.0.0.zip chic-clion-plugin/lib/instrumented-chic-clion-plugin-1.0.0.jar)",
+      "Bash(unzip -l /tmp/pluginjar.jar)",
+      "Bash(grep -E \"^\\(string|bool|void|char|i32|f64\\)$\")",
+      "Read(//private/tmp/chic-verify/**)",
+      "Bash(unzip -l chic-clion-plugin/lib/instrumented-chic-clion-plugin-1.0.0.jar)",
+      "Bash(javap -c chic-clion-plugin/lib/instrumented-chic-clion-plugin-1.0.0.jar)",
+      "Bash(unzip -o -q chic-clion-plugin/lib/instrumented-chic-clion-plugin-1.0.0.jar com/chic/lexer/_ChicLexer.class -d /tmp/chic-verify/extracted)",
+      "Read(//tmp/chic-verify/extracted/com/chic/lexer/**)",
+      "Bash(grep -iE \"^\\(string|bool|void|char|i32|f64\\)$\")"
+    ]
+  }
+}
