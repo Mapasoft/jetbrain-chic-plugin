@@ -8,10 +8,15 @@ plugins {
 }
 
 group = "com.chic"
-version = "1.0.2"
+version = "1.0.6"
 
 kotlin {
     jvmToolchain(21)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -22,7 +27,7 @@ intellij {
     type.set("CL")
     version.set("2024.1.4")
     downloadSources.set(false)
-    plugins.set(listOf())
+    plugins.set(listOf("com.intellij.clion", "com.intellij.nativeDebug", "com.intellij.cidr.base"))
 }
 
 // ---------------------------------------------------------------------------
@@ -39,6 +44,7 @@ val generateChicLexer = tasks.register<GenerateLexerTask>("generateChicLexer") {
 // Make compilation depend on lexer generation
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     dependsOn(generateChicLexer)
+    kotlinOptions.jvmTarget = "17"
 }
 tasks.named("compileJava") {
     dependsOn(generateChicLexer)

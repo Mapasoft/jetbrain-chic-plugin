@@ -13,6 +13,7 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.nativeDebug</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -52,6 +53,11 @@
         <!-- ── Run configuration ─────────────────────────────────────── -->
         <configurationType
             implementation="com.chic.run.ChicRunConfigurationType"/>
+        <runConfigurationProducer
+            implementation="com.chic.run.ChicRunConfigurationProducer"/>
+        <notificationGroup
+            id="Chic"
+            displayType="BALLOON"/>
 
         <!-- ── Settings page ─────────────────────────────────────────── -->
         <projectConfigurable
@@ -61,4 +67,31 @@
             displayName="Chic"/>
 
     </extensions>
+
+    <extensions defaultExtensionNs="cidr.debugger">
+        <languageSupport
+            language="Chic"
+            implementationClass="com.chic.debug.ChicDebuggerLanguageSupport"/>
+        <lineBreakpointFileTypesProvider
+            implementation="com.chic.debug.ChicCidrBreakpointFileTypesProvider"/>
+    </extensions>
+
+    <actions>
+        <action
+            id="com.chic.run.RunChicFile"
+            class="com.chic.run.RunChicFileAction"
+            text="Run Chic File"
+            description="Compile and run the selected Chic file">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
+        <action
+            id="com.chic.run.DebugChicFile"
+            class="com.chic.run.DebugChicFileAction"
+            text="Debug Chic File"
+            description="Build with debug info and launch CLion's native debugger">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
+    </actions>
 </idea-plugin>

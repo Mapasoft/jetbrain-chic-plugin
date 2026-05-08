@@ -39,6 +39,16 @@ class ChicRunConfiguration(
         if (sourceFile.isBlank()) {
             throw RuntimeConfigurationError("Source file is not specified.")
         }
+        val file = ChicSourceFile.resolve(project, sourceFile)
+        if (!file.isFile) {
+            throw RuntimeConfigurationError("Chic source file does not exist.")
+        }
+        if (file.extension != "chic") {
+            throw RuntimeConfigurationError("Source file must use the .chic extension.")
+        }
+        if (ChicCompilerDetector.resolveCompiler(project, chicBinary) == null) {
+            throw RuntimeConfigurationError("Chic compiler was not found. Set it in Settings | Tools | Chic.")
+        }
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState =

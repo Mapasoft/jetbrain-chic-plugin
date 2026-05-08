@@ -1,6 +1,5 @@
 package com.chic.run
 
-import com.chic.settings.ChicSettings
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
@@ -28,7 +27,7 @@ class ChicRunState(
 ) : CommandLineState(environment) {
 
     override fun startProcess(): ProcessHandler {
-        val binary = resolveBinary()
+        val binary = ChicCompilerDetector.resolveCompiler(environment.project, config.chicBinary) ?: config.chicBinary
 
         val cmd = GeneralCommandLine(binary)
             .withParameters(config.sourceFile)
@@ -38,15 +37,6 @@ class ChicRunState(
         return OSProcessHandler(cmd).also { handler ->
             handler.setShouldDestroyProcessRecursively(true)
         }
-    }
-
-    // Per-run override wins; otherwise use the project-wide setting; fall back to PATH.
-    private fun resolveBinary(): String {
-        val perRun = config.chicBinary.trim()
-        if (perRun.isNotEmpty() && perRun != "chic") return perRun
-
-        val settingsPath = ChicSettings.getInstance(environment.project).compilerPath.trim()
-        return settingsPath.ifEmpty { "chic" }
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
