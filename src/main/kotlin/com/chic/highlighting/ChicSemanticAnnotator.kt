@@ -75,9 +75,16 @@ class ChicSemanticAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element !is LeafPsiElement) return
-        if (element.elementType != ChicTokenTypes.IDENTIFIER) return
 
-        val attrs = computeAttributes(element, element.text) ?: return
+        val attrs = when {
+            element.elementType in ChicTokenTypes.BOOLEANS -> ChicSyntaxHighlighter.BOOLEAN_LITERAL
+            element.elementType in ChicTokenTypes.PREDEFINED -> ChicSyntaxHighlighter.PREDEFINED
+            element.elementType in ChicTokenTypes.PREPROCESSOR -> ChicSyntaxHighlighter.PREPROCESSOR
+            element.elementType in ChicTokenTypes.KEYWORDS -> ChicSyntaxHighlighter.KEYWORD
+            element.elementType == ChicTokenTypes.BUILTIN_TYPE -> ChicSyntaxHighlighter.BUILTIN_TYPE
+            element.elementType == ChicTokenTypes.IDENTIFIER -> computeAttributes(element, element.text)
+            else -> null
+        } ?: return
 
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(element.textRange)
