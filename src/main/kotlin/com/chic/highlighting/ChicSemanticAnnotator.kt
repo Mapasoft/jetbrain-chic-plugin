@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 
 /**
  * Rust-flavored semantic highlighting for Chic identifiers.
@@ -74,15 +73,17 @@ class ChicSemanticAnnotator : Annotator {
     }
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is LeafPsiElement) return
+        if (element.firstChild != null) return
 
         val attrs = when {
-            element.elementType in ChicTokenTypes.BOOLEANS -> ChicSyntaxHighlighter.BOOLEAN_LITERAL
-            element.elementType in ChicTokenTypes.PREDEFINED -> ChicSyntaxHighlighter.PREDEFINED
-            element.elementType in ChicTokenTypes.PREPROCESSOR -> ChicSyntaxHighlighter.PREPROCESSOR
-            element.elementType in ChicTokenTypes.KEYWORDS -> ChicSyntaxHighlighter.KEYWORD
-            element.elementType == ChicTokenTypes.BUILTIN_TYPE -> ChicSyntaxHighlighter.BUILTIN_TYPE
-            element.elementType == ChicTokenTypes.IDENTIFIER -> computeAttributes(element, element.text)
+            element.tokenType == ChicTokenTypes.LINE_COMMENT -> ChicSyntaxHighlighter.LINE_COMMENT
+            element.tokenType == ChicTokenTypes.BLOCK_COMMENT -> ChicSyntaxHighlighter.BLOCK_COMMENT
+            element.tokenType in ChicTokenTypes.BOOLEANS -> ChicSyntaxHighlighter.BOOLEAN_LITERAL
+            element.tokenType in ChicTokenTypes.PREDEFINED -> ChicSyntaxHighlighter.PREDEFINED
+            element.tokenType in ChicTokenTypes.PREPROCESSOR -> ChicSyntaxHighlighter.PREPROCESSOR
+            element.tokenType in ChicTokenTypes.KEYWORDS -> ChicSyntaxHighlighter.KEYWORD
+            element.tokenType == ChicTokenTypes.BUILTIN_TYPE -> ChicSyntaxHighlighter.BUILTIN_TYPE
+            element.tokenType == ChicTokenTypes.IDENTIFIER -> computeAttributes(element, element.text)
             else -> null
         } ?: return
 
@@ -92,7 +93,7 @@ class ChicSemanticAnnotator : Annotator {
             .create()
     }
 
-    private fun computeAttributes(element: LeafPsiElement, text: String): TextAttributesKey? {
+    private fun computeAttributes(element: PsiElement, text: String): TextAttributesKey? {
         // 1. @decorator (lexer emits the whole '@foo' as a single IDENTIFIER token)
         if (text.startsWith("@")) return DECORATOR
 
@@ -112,20 +113,20 @@ class ChicSemanticAnnotator : Annotator {
     }
 
     /** `<Name> : struct|enum|union|raw_union|alias|extension` → type, `: func` → function. */
-    private fun declarationAttribute(element: LeafPsiElement): TextAttributesKey? {
+    private fun declarationAttribute(element: PsiElement): TextAttributesKey? {
         val colon = nextMeaningfulSibling(element) ?: return null
-        if (colon.elementType != ChicTokenTypes.COLON) return null
+        if (colon.tokenType != ChicTokenTypes.COLON) return null
         val kind = nextMeaningfulSibling(colon) ?: return null
         return when {
-            kind.elementType in TYPE_KEYWORDS         -> TYPE_DECLARATION
-            kind.elementType == ChicTokenTypes.KW_FUNC -> FUNCTION_DECLARATION
+            kind.tokenType in TYPE_KEYWORDS         -> TYPE_DECLARATION
+            kind.tokenType == ChicTokenTypes.KW_FUNC -> FUNCTION_DECLARATION
             else                                       -> null
         }
     }
 
     private fun isAfterDot(element: PsiElement): Boolean {
         val prev = previousMeaningfulSibling(element) ?: return false
-        return prev.elementType == ChicTokenTypes.DOT
+        return prev.tokenType == ChicTokenTypes.DOT
     }
 
     /** Starts with uppercase letter and contains at least one lowercase letter. */
@@ -141,25 +142,28 @@ class ChicSemanticAnnotator : Annotator {
         return s.any { it.isLetter() }
     }
 
-    private fun nextMeaningfulSibling(element: PsiElement): LeafPsiElement? {
+    private fun nextMeaningfulSibling(element: PsiElement): PsiElement? {
         var sibling = element.nextSibling
         while (sibling != null) {
             val skip = sibling is PsiWhiteSpace ||
-                (sibling is LeafPsiElement && sibling.elementType in ChicTokenTypes.COMMENTS)
-            if (!skip) return sibling as? LeafPsiElement
+                (sibling.tokenType in ChicTokenTypes.COMMENTS)
+            if (!skip) return sibling.takeIf { it.firstChild == null }
             sibling = sibling.nextSibling
         }
         return null
     }
 
-    private fun previousMeaningfulSibling(element: PsiElement): LeafPsiElement? {
+    private fun previousMeaningfulSibling(element: PsiElement): PsiElement? {
         var sibling = element.prevSibling
         while (sibling != null) {
             val skip = sibling is PsiWhiteSpace ||
-                (sibling is LeafPsiElement && sibling.elementType in ChicTokenTypes.COMMENTS)
-            if (!skip) return sibling as? LeafPsiElement
+                (sibling.tokenType in ChicTokenTypes.COMMENTS)
+            if (!skip) return sibling.takeIf { it.firstChild == null }
             sibling = sibling.prevSibling
         }
         return null
     }
+
+    private val PsiElement.tokenType
+        get() = node?.elementType
 }
