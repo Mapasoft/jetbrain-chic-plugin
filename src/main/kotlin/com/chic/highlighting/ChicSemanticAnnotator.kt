@@ -98,7 +98,11 @@ class ChicSemanticAnnotator : Annotator {
         if (text.startsWith("@")) return DECORATOR
 
         // 2. Declaration site
+        textBasedDeclarationAttribute(element)?.let { return it }
         declarationAttribute(element)?.let { return it }
+
+        // 2.5 Generic target, e.g. extension<App>
+        if (isInsideExtensionTarget(element)) return TYPE_REFERENCE
 
         // 3. Enum variant access: `.PascalCase` after a dot
         if (isPascalCase(text) && isAfterDot(element)) return ENUM_VARIANT
@@ -110,6 +114,30 @@ class ChicSemanticAnnotator : Annotator {
         if (isPascalCase(text)) return TYPE_REFERENCE
 
         return null
+    }
+
+    private fun textBasedDeclarationAttribute(element: PsiElement): TextAttributesKey? {
+        val fileText = element.containingFile?.text ?: return null
+        val after = fileText.substring(element.textRange.endOffset)
+        val match = Regex("""^\s*:\s*([A-Za-z_][A-Za-z0-9_]*)""").find(after) ?: return null
+        return when (match.groupValues[1]) {
+            "struct", "enum", "union", "raw_union", "alias", "extension" -> TYPE_DECLARATION
+            "func" -> FUNCTION_DECLARATION
+            else -> null
+        }
+    }
+
+    private fun isInsideExtensionTarget(element: PsiElement): Boolean {
+        if (!isPascalCase(element.text)) return false
+
+        val fileText = element.containingFile?.text ?: return false
+        val start = element.textRange.startOffset
+        val end = element.textRange.endOffset
+        val before = fileText.substring(0, start).takeLast(32)
+        val after = fileText.substring(end).take(32)
+
+        return Regex("""extension\s*<\s*$""").containsMatchIn(before) &&
+            Regex("""^\s*>""").containsMatchIn(after)
     }
 
     /** `<Name> : struct|enum|union|raw_union|alias|extension` → type, `: func` → function. */

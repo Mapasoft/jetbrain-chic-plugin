@@ -1,6 +1,6 @@
 package com.chic.highlighting
 
-import com.chic.lexer.ChicLexerAdapter
+import com.chic.lexer.ChicHighlightingLexer
 import com.chic.lexer.ChicTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
@@ -126,7 +126,7 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
         private val BAD_CHAR_KEYS     = arrayOf(BAD_CHAR)
     }
 
-    override fun getHighlightingLexer(): Lexer = ChicLexerAdapter()
+    override fun getHighlightingLexer(): Lexer = ChicHighlightingLexer()
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> =
         when {
@@ -136,6 +136,12 @@ class ChicSyntaxHighlighter : SyntaxHighlighterBase() {
             tokenType in ChicTokenTypes.PREPROCESSOR            -> PREPROCESSOR_KEYS
             tokenType in ChicTokenTypes.KEYWORDS                -> KEYWORD_KEYS
             tokenType == ChicTokenTypes.BUILTIN_TYPE            -> BUILTIN_KEYS
+            tokenType == ChicTokenTypes.TYPE_DECLARATION_IDENTIFIER -> arrayOf(ChicSemanticAnnotator.TYPE_DECLARATION)
+            tokenType == ChicTokenTypes.FUNCTION_DECLARATION_IDENTIFIER -> arrayOf(ChicSemanticAnnotator.FUNCTION_DECLARATION)
+            tokenType == ChicTokenTypes.TYPE_REFERENCE_IDENTIFIER -> arrayOf(ChicSemanticAnnotator.TYPE_REFERENCE)
+            tokenType == ChicTokenTypes.ENUM_VARIANT_IDENTIFIER -> arrayOf(ChicSemanticAnnotator.ENUM_VARIANT)
+            tokenType == ChicTokenTypes.CONSTANT_IDENTIFIER -> arrayOf(ChicSemanticAnnotator.CONSTANT)
+            tokenType == ChicTokenTypes.DECORATOR_IDENTIFIER -> arrayOf(ChicSemanticAnnotator.DECORATOR)
 
             // Literals
             tokenType == ChicTokenTypes.INT_LITERAL   ||

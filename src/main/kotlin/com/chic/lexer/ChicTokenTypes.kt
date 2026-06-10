@@ -42,6 +42,16 @@ object ChicTokenTypes {
     @JvmField val IDENTIFIER   = ChicTokenType("IDENTIFIER")
     @JvmField val BUILTIN_TYPE = ChicTokenType("BUILTIN_TYPE")
 
+    // Highlighter-only identifier refinements. The parser lexer still emits
+    // IDENTIFIER; ChicHighlightingLexer maps selected identifiers to these
+    // token types so non-project files get useful colors without daemon passes.
+    @JvmField val TYPE_DECLARATION_IDENTIFIER = ChicTokenType("TYPE_DECLARATION_IDENTIFIER")
+    @JvmField val FUNCTION_DECLARATION_IDENTIFIER = ChicTokenType("FUNCTION_DECLARATION_IDENTIFIER")
+    @JvmField val TYPE_REFERENCE_IDENTIFIER = ChicTokenType("TYPE_REFERENCE_IDENTIFIER")
+    @JvmField val ENUM_VARIANT_IDENTIFIER = ChicTokenType("ENUM_VARIANT_IDENTIFIER")
+    @JvmField val CONSTANT_IDENTIFIER = ChicTokenType("CONSTANT_IDENTIFIER")
+    @JvmField val DECORATOR_IDENTIFIER = ChicTokenType("DECORATOR_IDENTIFIER")
+
     // ── Brackets ───────────────────────────────────────────────────────────
 
     @JvmField val LBRACE   = ChicTokenType("LBRACE")
