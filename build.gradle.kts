@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.chic"
-version = "1.0.11"
+version = "1.0.26"
 
 kotlin {
     jvmToolchain(21)

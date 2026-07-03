@@ -17,11 +17,11 @@ import com.intellij.openapi.util.NotNullLazyValue
 class ChicRunConfigurationType : SimpleConfigurationType(
     ID,
     "Chic",
-    "Compile and run a Chic source file",
+    "Build a Chic project",
     NotNullLazyValue.createValue { ChicIcons.FILE }
 ) {
     override fun createTemplateConfiguration(project: Project): RunConfiguration =
-        ChicRunConfiguration(project, this, "Chic")
+        ChicRunConfiguration(project, this, "Build ${project.name}")
 
     companion object {
         const val ID: String = "ChicRunConfiguration"

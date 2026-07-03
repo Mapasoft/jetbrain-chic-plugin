@@ -11,6 +11,7 @@ object ChicCompilerDetector {
         val candidates = listOfNotNull(
             overridePath?.trim()?.takeIf { it.isNotEmpty() && it != DEFAULT_BINARY },
             ChicSettings.getInstance(project).compilerPath.trim().takeIf { it.isNotEmpty() },
+            findInChicDir(),
             findOnPath()?.absolutePath,
             findInProject(project)
         )
@@ -28,6 +29,16 @@ object ChicCompilerDetector {
     private fun findOnPath(): File? =
         PathEnvironmentVariableUtil.findInPath(DEFAULT_BINARY)
 
+    private fun findInChicDir(): String? {
+        val chicDir = System.getenv(CHIC_DIR_ENV)?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val candidates = listOf(
+            "$chicDir/bin/$DEFAULT_BINARY",
+            "$chicDir/$DEFAULT_BINARY"
+        )
+
+        return candidates.firstOrNull { isUsableCompiler(it) }
+    }
+
     private fun findInProject(project: Project): String? {
         val basePath = project.basePath ?: return null
         val candidates = listOf(
@@ -42,4 +53,5 @@ object ChicCompilerDetector {
     }
 
     private const val DEFAULT_BINARY = "chic"
+    private const val CHIC_DIR_ENV = "CHIC_DIR"
 }

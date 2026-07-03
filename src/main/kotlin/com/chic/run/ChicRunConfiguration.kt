@@ -11,12 +11,12 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import org.jdom.Element
+import java.io.File
 
 /**
- * Holds the user-editable settings for a Chic build run configuration:
- *
- *  - [chicBinary]  — path (or name on PATH) of the `chic` executable
- *  - [sourceFile]  — the `.chic` file to pass to the compiler
+ * Holds the user-editable settings for a Chic project build configuration.
+ * The project root is the CLion project base path. The compiler is discovered
+ * from CHIC_DIR, Settings | Tools | Chic, PATH, or this optional override.
  */
 class ChicRunConfiguration(
     project: Project,
@@ -24,11 +24,14 @@ class ChicRunConfiguration(
     name: String
 ) : RunConfigurationBase<RunConfigurationOptions>(project, factory, name) {
 
-    /** Path or name of the chic compiler binary. */
-    var chicBinary: String = "chic"
+    /** Optional path or name of the chic compiler binary. */
+    var compilerOverridePath: String = ""
 
-    /** Source file to compile. */
-    var sourceFile: String = ""
+    /** Extra arguments appended to the Chic compiler invocation. */
+    var chicArguments: String = ""
+
+    /** Arguments passed to the compiled program when using build-exec. */
+    var programArguments: String = ""
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -36,18 +39,16 @@ class ChicRunConfiguration(
         ChicRunConfigurationEditor()
 
     override fun checkConfiguration() {
-        if (sourceFile.isBlank()) {
-            throw RuntimeConfigurationError("Source file is not specified.")
+        val projectRoot = project.basePath?.let { File(it) }
+            ?: throw RuntimeConfigurationError("Project root is not available.")
+        if (!projectRoot.isDirectory) {
+            throw RuntimeConfigurationError("Project root does not exist.")
         }
-        val file = ChicSourceFile.resolve(project, sourceFile)
-        if (!file.isFile) {
-            throw RuntimeConfigurationError("Chic source file does not exist.")
+        if (!containsChicSource(projectRoot)) {
+            throw RuntimeConfigurationError("No .chic source files were found under the project root.")
         }
-        if (file.extension != "chic") {
-            throw RuntimeConfigurationError("Source file must use the .chic extension.")
-        }
-        if (ChicCompilerDetector.resolveCompiler(project, chicBinary) == null) {
-            throw RuntimeConfigurationError("Chic compiler was not found. Set it in Settings | Tools | Chic.")
+        if (ChicCompilerDetector.resolveCompiler(project, compilerOverridePath) == null) {
+            throw RuntimeConfigurationError("Chic compiler was not found. Set CHIC_DIR or use Override compiler path.")
         }
     }
 
@@ -58,13 +59,28 @@ class ChicRunConfiguration(
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
-        chicBinary = element.getAttributeValue("chicBinary") ?: "chic"
-        sourceFile = element.getAttributeValue("sourceFile") ?: ""
+        compilerOverridePath = element.getAttributeValue("compilerOverridePath")
+            ?: element.getAttributeValue("chicBinary")
+            ?: ""
+        chicArguments = element.getAttributeValue("chicArguments") ?: ""
+        programArguments = element.getAttributeValue("programArguments") ?: ""
     }
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
-        element.setAttribute("chicBinary", chicBinary)
-        element.setAttribute("sourceFile", sourceFile)
+        if (compilerOverridePath.isNotBlank()) {
+            element.setAttribute("compilerOverridePath", compilerOverridePath)
+        }
+        if (chicArguments.isNotBlank()) {
+            element.setAttribute("chicArguments", chicArguments)
+        }
+        if (programArguments.isNotBlank()) {
+            element.setAttribute("programArguments", programArguments)
+        }
     }
+
+    private fun containsChicSource(root: File): Boolean =
+        root.walkTopDown()
+            .onEnter { it.name != "bin" && it.name != "obj" && it.name != ".git" && !it.name.endsWith(".idea") }
+            .any { it.isFile && it.extension == "chic" }
 }

@@ -14,11 +14,9 @@ class ChicRunConfigurationProducer : LazyRunConfigurationProducer<ChicRunConfigu
         sourceElement: Ref<PsiElement>
     ): Boolean {
         val chicFile = context.psiLocation?.containingFile as? ChicFile ?: return false
-        val virtualFile = chicFile.virtualFile ?: return false
 
-        configuration.name = suggestedName(virtualFile.nameWithoutExtension)
-        configuration.sourceFile = virtualFile.path
-        configuration.chicBinary = ChicCompilerDetector.resolveCompiler(context.project) ?: "chic"
+        configuration.name = suggestedName(context.project.name)
+        configuration.compilerOverridePath = ""
         sourceElement.set(chicFile)
         return true
     }
@@ -27,14 +25,13 @@ class ChicRunConfigurationProducer : LazyRunConfigurationProducer<ChicRunConfigu
         configuration: ChicRunConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        val chicFile = context.psiLocation?.containingFile as? ChicFile ?: return false
-        val virtualFile = chicFile.virtualFile ?: return false
-        return configuration.sourceFile == virtualFile.path
+        context.psiLocation?.containingFile as? ChicFile ?: return false
+        return configuration.name == suggestedName(context.project.name)
     }
 
     override fun getConfigurationFactory() =
         ChicRunConfigurationType.getInstance().configurationFactories.single()
 
-    private fun suggestedName(fileName: String): String =
-        "Run $fileName.chic"
+    private fun suggestedName(projectName: String): String =
+        "Build $projectName"
 }

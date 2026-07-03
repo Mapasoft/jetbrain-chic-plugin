@@ -12,9 +12,17 @@ data class ChicBuildPaths(
     companion object {
         fun forFile(project: Project, file: VirtualFile): ChicBuildPaths {
             val projectDir = File(project.basePath ?: file.parent.path)
+            return forProjectDir(projectDir)
+        }
+
+        fun forProject(project: Project): ChicBuildPaths {
+            val projectDir = File(project.basePath ?: ".")
+            return forProjectDir(projectDir)
+        }
+
+        private fun forProjectDir(projectDir: File): ChicBuildPaths {
             val outputDir = projectDir
-            val outputName = outputDir.name
-            val executable = File(outputDir, "$outputName/bin/$outputName")
+            val executable = File(outputDir, "bin/${projectDir.name}")
             return ChicBuildPaths(projectDir, outputDir, executable)
         }
     }

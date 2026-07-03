@@ -1,39 +1,32 @@
 package com.chic.run
 
-import com.chic.ChicFileType
 import com.chic.ChicIcons
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 
-class RunChicFileAction : AnAction("Run Chic File", "Compile and run the selected Chic file", ChicIcons.FILE) {
+class RunChicFileAction : AnAction("Build Chic Project", "Build the current Chic project", ChicIcons.FILE) {
 
     override fun update(event: AnActionEvent) {
-        val project = event.project
-        val file = event.getData(CommonDataKeys.VIRTUAL_FILE)
-        event.presentation.isEnabledAndVisible = project != null && file?.fileType == ChicFileType.INSTANCE
+        event.presentation.isEnabledAndVisible = ChicProjectDetector.isChicContext(event)
     }
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.project ?: return
-        val file = event.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
 
-        val settings = createTemporaryConfiguration(project, file)
+        val settings = createTemporaryConfiguration(project)
         ProgramRunnerUtil.executeConfiguration(settings, DefaultRunExecutor.getRunExecutorInstance())
     }
 
-    private fun createTemporaryConfiguration(project: Project, file: VirtualFile) =
+    private fun createTemporaryConfiguration(project: Project) =
         RunManager.getInstance(project).let { runManager ->
             val type = ChicRunConfigurationType.getInstance()
-            val settings = runManager.createConfiguration("Run ${file.name}", type.configurationFactories.single())
+            val settings = runManager.createConfiguration("Build ${project.name}", type.configurationFactories.single())
             val configuration = settings.configuration as ChicRunConfiguration
-            configuration.sourceFile = file.path
-            configuration.chicBinary = ChicCompilerDetector.resolveCompiler(project) ?: "chic"
+            configuration.compilerOverridePath = ""
             runManager.setTemporaryConfiguration(settings)
             settings
         }

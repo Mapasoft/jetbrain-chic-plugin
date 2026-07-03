@@ -14,6 +14,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.nativeDebug</depends>
+    <depends>com.intellij.clion</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -53,6 +54,8 @@
         <!-- ── Run configuration ─────────────────────────────────────── -->
         <configurationType
             implementation="com.chic.run.ChicRunConfigurationType"/>
+        <programRunner
+            implementation="com.chic.run.ChicDebugProgramRunner"/>
         <runConfigurationProducer
             implementation="com.chic.run.ChicRunConfigurationProducer"/>
         <notificationGroup
@@ -80,16 +83,18 @@
         <action
             id="com.chic.run.RunChicFile"
             class="com.chic.run.RunChicFileAction"
-            text="Run Chic File"
-            description="Compile and run the selected Chic file">
+            text="Build Chic Project"
+            description="Build the current Chic project">
+            <add-to-group group-id="BuildMenu" anchor="first"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>
         <action
             id="com.chic.run.DebugChicFile"
             class="com.chic.run.DebugChicFileAction"
-            text="Debug Chic File"
-            description="Build with debug info and launch CLion's native debugger">
+            text="Debug Chic Project"
+            description="Build the current Chic project with debug info and launch CLion's native debugger">
+            <add-to-group group-id="BuildMenu" anchor="after" relative-to-action="com.chic.run.RunChicFile"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>
