@@ -29,13 +29,10 @@ class ChicRunState(
         val paths = ChicBuildPaths.forProject(environment.project)
         val binary = ChicCompilerDetector.resolveCompiler(environment.project, config.compilerOverridePath)
             ?: config.compilerOverridePath.ifBlank { "chic" }
-        val programArguments = ParametersListUtil.parse(config.programArguments)
-        val action = if (programArguments.isEmpty()) "build" else "build-exec"
 
         val cmd = GeneralCommandLine(binary)
-            .withParameters(action, paths.projectDir.path, "-out", paths.executable.path)
+            .withParameters("build", paths.projectDir.path, "-out", paths.executable.path)
             .withParameters(ParametersListUtil.parse(config.chicArguments))
-            .withParameters(programArguments)
             .withWorkDirectory(paths.projectDir)
             .withRedirectErrorStream(true)   // merge stderr → stdout for the console
 

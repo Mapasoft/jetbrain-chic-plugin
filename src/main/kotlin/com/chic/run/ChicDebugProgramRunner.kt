@@ -20,7 +20,8 @@ class ChicDebugProgramRunner : GenericProgramRunner<RunnerSettings>() {
         return ChicDebugLauncher.launch(
             environment,
             configuration.compilerOverridePath,
-            configuration.chicArguments
+            configuration.chicArguments,
+            configuration.programArguments
         )
     }
 }

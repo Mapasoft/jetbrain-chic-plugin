@@ -80,9 +80,9 @@ class ChicRunConfigurationEditor : SettingsEditor<ChicRunConfiguration>() {
         }
         row("Program args:") {
             cell(programArgumentsField).align(AlignX.FILL)
-                .comment("Optional. When set, the plugin uses <code>build-exec</code> and passes these arguments to the compiled program.")
+                .comment("Optional arguments passed to the compiled program. Do not include the executable path; <code>argv[0]</code> is added by the launcher.")
         }
-        row("All compiler arguments:") {
+        row("Run compiler arguments:") {
             cell(resolvedArgumentsField).align(AlignX.FILL)
         }
     }
@@ -106,11 +106,8 @@ class ChicRunConfigurationEditor : SettingsEditor<ChicRunConfiguration>() {
         val paths = ChicBuildPaths.forProject(currentProject!!)
 
         val extraArguments = parseArgumentsForDisplay(chicArgumentsField.text.trim())
-        val programArguments = parseArgumentsForDisplay(programArgumentsField.text.trim())
-        val action = if (programArguments.isEmpty()) "build" else "build-exec"
-        val arguments = listOf(action, paths.projectDir.path, "-out", paths.executable.path) +
-            extraArguments +
-            programArguments
+        val arguments = listOf("build", paths.projectDir.path, "-out", paths.executable.path) +
+            extraArguments
         resolvedArgumentsField.text = arguments.joinToString(" ") { formatArgument(it) }
     }
 

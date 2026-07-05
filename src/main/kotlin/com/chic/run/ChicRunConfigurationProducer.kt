@@ -33,5 +33,5 @@ class ChicRunConfigurationProducer : LazyRunConfigurationProducer<ChicRunConfigu
         ChicRunConfigurationType.getInstance().configurationFactories.single()
 
     private fun suggestedName(projectName: String): String =
-        "Build $projectName"
+        projectName
 }

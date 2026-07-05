@@ -3,12 +3,16 @@
     <name>Chic Language</name>
     <vendor>Chic Compiler Team</vendor>
     <description><![CDATA[
-        Language support for the <b>Chic</b> programming language.<br/>
+        CLion support for the <b>Chic</b> programming language.<br/>
         <ul>
-            <li>Syntax highlighting (keywords, types, literals, strings, comments, operators)</li>
-            <li>Brace and bracket matching</li>
-            <li>Code folding for blocks and block comments</li>
-            <li>Build runner — invokes the <code>chic</code> binary and maps error output to source locations</li>
+            <li>Syntax highlighting for keywords, declarations, types, literals, strings, comments, and operators</li>
+            <li>Semantic highlighting for user-defined types, enum cases, constants, decorators, and generic type arguments</li>
+            <li>Brace and bracket matching with code folding for blocks and block comments</li>
+            <li>Project-level Chic run configuration using the CLion project root as the Chic project root</li>
+            <li>Automatic compiler discovery from <code>CHIC_DIR/bin/chic</code>, plugin settings, PATH, or an optional override</li>
+            <li>Build action that invokes <code>chic build</code> and maps compiler diagnostics to clickable source locations</li>
+            <li>Debug action that builds with <code>-g</code>, launches CLion's native debugger, and supports Chic source breakpoints</li>
+            <li>Separate fields for compiler arguments and compiled-program arguments, including debug launch argument forwarding</li>
         </ul>
     ]]></description>
 
@@ -85,6 +89,7 @@
             class="com.chic.run.RunChicFileAction"
             text="Build Chic Project"
             description="Build the current Chic project">
+            <keyboard-shortcut keymap="$default" first-keystroke="F7"/>
             <add-to-group group-id="BuildMenu" anchor="first"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>

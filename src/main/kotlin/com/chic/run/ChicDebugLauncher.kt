@@ -4,7 +4,6 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.RunManager
-import com.intellij.execution.RunManagerEx
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.executors.DefaultDebugExecutor
@@ -31,7 +30,12 @@ import java.util.UUID
 
 object ChicDebugLauncher {
 
-    fun launch(environment: ExecutionEnvironment, compilerOverridePath: String = "", chicArguments: String = ""): RunContentDescriptor? {
+    fun launch(
+        environment: ExecutionEnvironment,
+        compilerOverridePath: String = "",
+        chicArguments: String = "",
+        programArguments: String = ""
+    ): RunContentDescriptor? {
         val project = environment.project
         val compiler = ChicCompilerDetector.resolveCompiler(project, compilerOverridePath)
         if (compiler == null) {
@@ -55,7 +59,7 @@ object ChicDebugLauncher {
             override fun processTerminated(event: ProcessEvent) {
                 if (event.exitCode == 0 && paths.executable.isFile) {
                     ApplicationManager.getApplication().invokeLater {
-                        launchNativeDebugger(project, paths.executable.path)
+                        launchNativeDebugger(project, paths.executable.path, paths.projectDir.path, programArguments)
                     }
                 }
             }
@@ -73,24 +77,34 @@ object ChicDebugLauncher {
         return descriptor
     }
 
-    private fun launchNativeDebugger(project: Project, executablePath: String) {
-        val settings = createNativeDebugConfiguration(project, executablePath)
+    private fun launchNativeDebugger(
+        project: Project,
+        executablePath: String,
+        workingDirectory: String,
+        programArguments: String
+    ) {
+        val settings = createNativeDebugConfiguration(project, executablePath, workingDirectory, programArguments)
         ApplicationManager.getApplication().invokeLater {
             ProgramRunnerUtil.executeConfiguration(settings, DefaultDebugExecutor.getDebugExecutorInstance())
         }
     }
 
-    private fun createNativeDebugConfiguration(project: Project, executablePath: String) =
+    private fun createNativeDebugConfiguration(
+        project: Project,
+        executablePath: String,
+        workingDirectory: String,
+        programArguments: String
+    ) =
         RunManager.getInstance(project).let { runManager ->
             val type = ConfigurationTypeUtil.findConfigurationType(CLionExternalRunConfigurationType::class.java)
             val settings = runManager.createConfiguration("Debug Chic", type.configurationFactories.single())
             val configuration = settings.configuration as CLionExternalRunConfiguration
             configuration.executableData = ExecutableData(executablePath)
+            configuration.programParameters = programArguments
+            configuration.workingDirectory = workingDirectory
             val target = ensureChicExternalTarget(project)
             val buildConfiguration = target.buildConfigurations.first()
             configuration.setTargetAndConfigurationData(BuildTargetAndConfigurationData(target, buildConfiguration))
-            RunManagerEx.getInstanceEx(project).setBeforeRunTasks(configuration, emptyList())
-            runManager.setTemporaryConfiguration(settings)
             settings
         }
 

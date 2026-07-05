@@ -30,7 +30,7 @@ class ChicRunConfiguration(
     /** Extra arguments appended to the Chic compiler invocation. */
     var chicArguments: String = ""
 
-    /** Arguments passed to the compiled program when using build-exec. */
+    /** Arguments passed to the compiled program when launching under the debugger. */
     var programArguments: String = ""
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
