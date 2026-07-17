@@ -65,6 +65,8 @@
         <notificationGroup
             id="Chic"
             displayType="BALLOON"/>
+        <directoryProjectGenerator
+            implementation="com.chic.project.ChicDirectoryProjectGenerator"/>
 
         <!-- ── Settings page ─────────────────────────────────────────── -->
         <projectConfigurable

@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.chic"
-version = "1.0.33"
+version = "1.0.40"
 
 kotlin {
     jvmToolchain(21)
@@ -65,7 +65,7 @@ sourceSets {
 tasks {
     patchPluginXml {
         sinceBuild.set("241")
-        untilBuild.set("261.*")
+        untilBuild.set("262.*")
     }
 
     // Skip searchable options for faster local builds
