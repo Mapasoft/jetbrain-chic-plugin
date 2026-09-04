@@ -147,6 +147,7 @@ object ChicTokenTypes {
     @JvmField val KW_TRY       = ChicTokenType("KW_TRY")
     @JvmField val KW_OR_ELSE   = ChicTokenType("KW_OR_ELSE")
     @JvmField val KW_OR_ERROR  = ChicTokenType("KW_OR_ERROR")
+    @JvmField val KW_PACKAGE   = ChicTokenType("KW_PACKAGE")
     @JvmField val KW_CT_IF     = ChicTokenType("KW_CT_IF")
     @JvmField val KW_CT_ELSE   = ChicTokenType("KW_CT_ELSE")
     @JvmField val KW_CT_ELIF   = ChicTokenType("KW_CT_ELIF")
@@ -169,9 +170,9 @@ object ChicTokenTypes {
     /** Predefined symbols (null-like literals) — highlighted like booleans. */
     @JvmField val PREDEFINED: TokenSet = TokenSet.create(KW_NULL)
 
-    /** Compile-time / preprocessor directives (#if, #elif, #else, #end). */
+    /** Hash-prefixed directives (#package, #if, #elif, #else, #end). */
     @JvmField val PREPROCESSOR: TokenSet = TokenSet.create(
-        KW_CT_IF, KW_CT_ELIF, KW_CT_ELSE, KW_CT_END
+        KW_PACKAGE, KW_CT_IF, KW_CT_ELIF, KW_CT_ELSE, KW_CT_END
     )
 
     /** All numeric and string literal token types. */

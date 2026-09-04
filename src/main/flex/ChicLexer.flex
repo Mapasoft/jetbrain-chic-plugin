@@ -65,8 +65,9 @@ WHITE      = [ \t\r\n]+
     {DIGIT}+ "." {DIGIT}+           { return FLOAT_LITERAL; }
     {DIGIT}+                        { return INT_LITERAL; }
 
-    // ── Compile-time directives (#if, #else, #elif, #end) ──────────────────
+    // ── Hash-prefixed directives ────────────────────────────────────────
     // Must precede the identifier rule; JFlex longest-match handles 'elif' vs 'else'.
+    "#package"                      { return KW_PACKAGE; }
     "#if"                           { return KW_CT_IF; }
     "#elif"                         { return KW_CT_ELIF; }
     "#else"                         { return KW_CT_ELSE; }

@@ -18,9 +18,10 @@ import com.intellij.psi.PsiWhiteSpace
  *   1. `@decorator`                                            → metadata
  *   2. Declaration site `<Name> : struct|enum|union|raw_union
  *                              |alias|extension|func`           → type / function decl
- *   3. After-dot `PascalCase`   (e.g. `FileMode.ReadOnly`)      → enum variant
- *   4. `UPPER_SNAKE_CASE`       (e.g. `MAX_BUFFER`)             → constant
- *   5. `PascalCase`             (e.g. `FileMode`, `Allocator`)  → type reference
+ *   3. Member in an enum body    (e.g. `enum { ReadOnly }`)      → enum variant
+ *   4. After-dot `PascalCase`    (e.g. `FileMode.ReadOnly`)      → enum variant
+ *   5. `UPPER_SNAKE_CASE`        (e.g. `MAX_BUFFER`)             → constant
+ *   6. `PascalCase`              (e.g. `FileMode`, `Allocator`)  → type reference
  *
  * Anything else is left at its default lexer color (variables / functions /
  * parameters all share the editor scheme's default identifier color).
@@ -104,16 +105,50 @@ class ChicSemanticAnnotator : Annotator {
         // 2.5 Generic target, e.g. extension<App>
         if (isInsideExtensionTarget(element)) return TYPE_REFERENCE
 
-        // 3. Enum variant access: `.PascalCase` after a dot
+        // 3. Enum variant declaration: the first identifier after `{` or `,`
+        if (isEnumVariantDeclaration(element)) return ENUM_VARIANT
+
+        // 4. Enum variant access: `.PascalCase` after a dot
         if (isPascalCase(text) && isAfterDot(element)) return ENUM_VARIANT
 
-        // 4. UPPER_SNAKE_CASE constant
+        // 5. UPPER_SNAKE_CASE constant
         if (isUpperSnakeCase(text)) return CONSTANT
 
-        // 5. Plain PascalCase type reference
+        // 6. Plain PascalCase type reference
         if (isPascalCase(text)) return TYPE_REFERENCE
 
         return null
+    }
+
+    private fun isEnumVariantDeclaration(element: PsiElement): Boolean {
+        val previous = previousMeaningfulSibling(element) ?: return false
+        if (previous.tokenType != ChicTokenTypes.LBRACE &&
+            previous.tokenType != ChicTokenTypes.COMMA
+        ) {
+            return false
+        }
+
+        var sibling = previous
+        var nestedDelimiterDepth = 0
+        while (true) {
+            when (sibling.tokenType) {
+                ChicTokenTypes.RBRACE,
+                ChicTokenTypes.RPAREN,
+                ChicTokenTypes.RBRACKET -> nestedDelimiterDepth++
+
+                ChicTokenTypes.LBRACE,
+                ChicTokenTypes.LPAREN,
+                ChicTokenTypes.LBRACKET -> {
+                    if (nestedDelimiterDepth > 0) {
+                        nestedDelimiterDepth--
+                    } else {
+                        return sibling.tokenType == ChicTokenTypes.LBRACE &&
+                            previousMeaningfulSibling(sibling)?.tokenType == ChicTokenTypes.KW_ENUM
+                    }
+                }
+            }
+            sibling = previousMeaningfulSibling(sibling) ?: return false
+        }
     }
 
     private fun textBasedDeclarationAttribute(element: PsiElement): TextAttributesKey? {
